@@ -1,0 +1,24 @@
+services:
+  couchdb:
+    image: couchdb:latest
+    container_name: couchdb
+    ports:
+      - "5984:5984"
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=admin
+
+  flask_api:
+    build: .
+    container_name: flask_api
+    ports:
+      - "5000:5000"
+    depends_on:
+      - couchdb
+    environment:
+      COUCHDB_URL: http://admin:admin@couchdb:5984
+
+volumes:
+  couchdb_data:
