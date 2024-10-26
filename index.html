@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listado y Detalle de Películas</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="my-4 text-center">Gestión de Películas</h1>
+
+      <!-- Listar Películas -->
+      <h2>Lista de Películas</h2>
+      <button class="btn btn-primary mb-3" onclick="fetchMovies()">
+        Actualizar Lista
+      </button>
+      <ul id="movieList" class="list-group"></ul>
+
+      <!-- Buscar Película por ID -->
+      <h2 class="mt-4">Buscar Película por ID</h2>
+      <form id="getMovieForm" class="mb-4">
+        <div class="input-group">
+          <input
+            type="text"
+            id="getMovieId"
+            class="form-control"
+            placeholder="ID de la película"
+            required
+          />
+          <button type="submit" class="btn btn-secondary">Buscar</button>
+        </div>
+      </form>
+
+      <!-- Detalle de la Película -->
+      <div id="movieDetail" class="mt-4"></div>
+    </div>
+
+    <script>
+      const apiUrl = "http://localhost:5000/movie";
+
+      // Función para listar películas
+      async function fetchMovies() {
+        try {
+          const response = await fetch(apiUrl);
+          const movies = await response.json();
+          const movieList = document.getElementById("movieList");
+          movieList.innerHTML = "";
+          movies.forEach((movie) => {
+            const li = document.createElement("li");
+            li.className =
+              "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `${movie.title} (${movie.year}) - ${movie.genre} - ${movie.director}
+                                    | Calificación: ${movie.rating}
+                                    <button class="btn btn-link" onclick="fetchMovieDetails('${movie._id}')">Detalle</button>`;
+            movieList.appendChild(li);
+          });
+        } catch (error) {
+          alert("No se pudo obtener la lista de películas");
+        }
+      }
+
+      // Función para obtener detalles de una película por ID
+      async function fetchMovieDetails(movieId) {
+        try {
+          const response = await fetch(`${apiUrl}/${movieId}`);
+          if (!response.ok) throw new Error("Película no encontrada");
+
+          const movie = await response.json();
+          const movieDetail = document.getElementById("movieDetail");
+          movieDetail.innerHTML = `<div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Detalles de la Película</h3>
+                        <p><strong>Título:</strong> ${movie.title}</p>
+                        <p><strong>Año:</strong> ${movie.year}</p>
+                        <p><strong>Género:</strong> ${movie.genre}</p>
+                        <p><strong>Director:</strong> ${movie.director}</p>
+                        <p><strong>Calificación:</strong> ${movie.rating}</p>
+                        <p><strong>Duración:</strong> ${movie.duration} min</p>
+                    </div>
+                </div>`;
+        } catch (error) {
+          document.getElementById("movieDetail").innerHTML =
+            "<div class='alert alert-danger'>Película no encontrada</div>";
+        }
+      }
+
+      // Función para buscar película por ID desde el formulario
+      document
+        .getElementById("getMovieForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const movieId = document.getElementById("getMovieId").value;
+          fetchMovieDetails(movieId);
+        });
+
+      // Cargar la lista de películas al iniciar
+      fetchMovies();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
