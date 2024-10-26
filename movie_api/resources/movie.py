@@ -4,7 +4,7 @@ from models.movie_model import create_movie_data
 
 movie_ns = Namespace('movies', description='Movies operations')
 
-# Definir el modelo para la documentación de Swagger
+# Modelo para la documentacion de Swagger
 movie_model = movie_ns.model('Movie', {
     'title': fields.String(required=True, description='The title of the movie'),
     'year': fields.Integer(required=True, description='The release year of the movie'),
@@ -27,10 +27,10 @@ parser.add_argument('duration', type=int, required=True, help="Duration cannot b
 class MovieList(Resource):
     def get(self):
         db = get_db()
-        movies = [db[doc] for doc in db if db[doc].get("status") == "active"]  # Recuperar los datos completos de cada documento
+        movies = [db[doc] for doc in db if db[doc].get("status") == "active"]
         return movies, 200
 
-    @movie_ns.expect(movie_model)  # Usar el modelo para la documentación
+    @movie_ns.expect(movie_model)
     def post(self):
         args = parser.parse_args()
         db = get_db()
@@ -54,7 +54,7 @@ class Movie(Resource):
             return movie, 200
         return {'error': 'Not found or inactive'}, 404
 
-    @movie_ns.expect(movie_model)  # Usar el modelo para la documentación
+    @movie_ns.expect(movie_model)
     def put(self, movie_id):
         args = parser.parse_args()
         db = get_db()

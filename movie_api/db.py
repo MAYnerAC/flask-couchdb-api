@@ -6,4 +6,4 @@ def get_db():
     if DATABASE_NAME in couch:
         return couch[DATABASE_NAME]
     else:
-        return couch.create(DATABASE_NAME)  # Crea la base de datos si no existe
+        return couch.create(DATABASE_NAME)  # Crea la bd si no existe
